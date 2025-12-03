@@ -9,8 +9,8 @@ app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 
 # COLOQUE SEU E-MAIL E SENHA APP DO GMAIL
-app.config['MAIL_USERNAME'] = 'SEU_EMAIL@gmail.com'
-app.config['MAIL_PASSWORD'] = 'SUA_SENHA_DE_APP'
+app.config['MAIL_USERNAME'] = 'vnnzsala1@gmail.com'
+app.config['MAIL_PASSWORD'] = 'vinicouter'
 
 mail = Mail(app)
 
