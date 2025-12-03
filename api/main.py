@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import os
 import resend
-from mangum import Mangum
+from mangum import Mangum  # Adaptador WSGI -> Lambda (serverless)
 
 # Configura API Resend
 resend.api_key = "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"

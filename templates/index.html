@@ -832,7 +832,7 @@
             const formData = new FormData(form);
             const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "/api";
 
-            fetch(apiBase + "/enviar_email", {
+            fetch("/enviar_email", {
                 method: "POST",
                 body: formData
             })
