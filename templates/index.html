@@ -827,27 +827,28 @@
 
         // 6. MODAL
         function enviarFormulario(event) {
-        event.preventDefault();
-        const form = event.target;
-        const formData = new FormData(form);
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const apiBase = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? "" : "/api";
 
-        fetch("/enviar_email", {
-            method: "POST",
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                document.getElementById('successModal').style.display = 'flex';
-            } else {
-                alert("Erro ao enviar email: " + (data.error || "Desconhecido"));
-            }
-        })
-        .catch(err => {
-            alert("Erro na requisição: " + err);
-        });
+            fetch(apiBase + "/enviar_email", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('successModal').style.display = 'flex';
+                } else {
+                    alert("Erro ao enviar email: " + (data.error || "Desconhecido"));
+                }
+            })
+            .catch(err => {
+                alert("Erro na requisição: " + err);
+            });
 
-        form.reset();
+            form.reset();
         }
 
         function fecharModal() {
