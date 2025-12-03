@@ -1,42 +1,43 @@
-from flask import Flask, render_template, request, redirect
-from flask_mail import Mail, Message
+from flask import Flask, render_template, request, jsonify
+import os
+import resend
+from mangum import Mangum  # Adaptador WSGI -> Lambda (serverless)
+
+# Configura API Resend
+resend.api_key = "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"
 
 app = Flask(__name__)
 
-# CONFIG DO EMAIL
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-
-# COLOQUE SEU E-MAIL E SENHA APP DO GMAIL
-app.config['MAIL_USERNAME'] = 'vnnzsala1@gmail.com'
-app.config['MAIL_PASSWORD'] = 'vinicouter'
-
-mail = Mail(app)
-
-@app.route('/')
-def index():
+@app.route("/", methods=["GET"])
+def home():
     return render_template("index.html")
 
-@app.route('/enviar_email', methods=['POST'])
+@app.route("/enviar_email", methods=["POST"])
 def enviar_email():
-    email_usuario = request.form['email']
+    data = request.form
+    email_usuario = data.get("email")
 
-    msg = Message(
-        subject="Bem-vindo ao EcoBottle 🌱",
-        sender=app.config['MAIL_USERNAME'],
-        recipients=[email_usuario]
-    )
+    if not email_usuario:
+        return jsonify({"error": "Email não fornecido"}), 400
 
-    msg.body = """Obrigado por se inscrever na nossa newsletter!
-Aqui está seu guia exclusivo para um futuro sustentável 🌍
+    # Envia email usando Resend
+    try:
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": email_usuario,
+            "subject": "Bem-vindo ao EcoBottle 🌱",
+            "html": """
+            <p>Obrigado por se inscrever na nossa newsletter!</p>
+            <p>Aqui está seu guia exclusivo para um futuro sustentável 🌍</p>
+            <p>Equipe EcoBottle 💚</p>
+            """
+        })
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-Equipe EcoBottle 💚
-"""
+# Adaptador Mangum para Vercel
+handler = Mangum(app)
 
-    mail.send(msg)
-
-    return redirect('/')  # depois podemos voltar com modal via JS
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
