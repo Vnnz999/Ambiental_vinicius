@@ -1,5 +1,3 @@
 flask
-vercel
 resend
 python-dotenv
-mangum

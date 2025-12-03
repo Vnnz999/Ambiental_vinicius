@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-import os
 import resend
-from mangum import Mangum  # Adaptador WSGI -> Lambda (serverless)
+import os
+
+app = Flask(__name__, 
+            template_folder='../templates', 
+            static_folder='../static')
 
 # Configura API Resend
 resend.api_key = "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"
-
-app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
@@ -35,7 +36,6 @@ def enviar_email():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-handler = Mangum(app)
 
 if __name__ == "__main__":
     app.run(debug=True)
