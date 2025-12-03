@@ -831,7 +831,7 @@
         const form = event.target;
         const formData = new FormData(form);
 
-        fetch("/api/enviar_email", {
+        fetch("/enviar_email", {
             method: "POST",
             body: formData
         })
