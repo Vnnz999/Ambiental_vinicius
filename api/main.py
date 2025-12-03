@@ -30,6 +30,7 @@ def enviar_email():
             <p>Obrigado por se inscrever na nossa newsletter!</p>
             <p>Aqui está seu guia exclusivo para um futuro sustentável 🌍</p>
             <p>Equipe EcoBottle 💚</p>
+            <p>DEV:vinicius</p>
             """
         })
         return jsonify({"success": True})
