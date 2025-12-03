@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import os
 import resend
-from mangum import Mangum  # Adaptador WSGI -> Lambda (serverless)
+from mangum import Mangum
 
 # Configura API Resend
 resend.api_key = "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"
@@ -20,7 +20,6 @@ def enviar_email():
     if not email_usuario:
         return jsonify({"error": "Email não fornecido"}), 400
 
-    # Envia email usando Resend
     try:
         resend.Emails.send({
             "from": "onboarding@resend.dev",
@@ -36,7 +35,6 @@ def enviar_email():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Adaptador Mangum para Vercel
 handler = Mangum(app)
 
 if __name__ == "__main__":

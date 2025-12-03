@@ -556,7 +556,8 @@
         </div>
         <div class="hero-image">
 
-            <img src="Gemini_Generated_Image_p6t7gep6t7gep6t7.png" alt="Garrafa EcoBottle">
+            <img src="{{ url_for('static', filename='img/garrafa.png') }}" alt="Garrafa EcoBottle">
+
         </div>
     </section>
 
@@ -669,7 +670,7 @@
             <h2>Junte-se ao Movimento</h2>
             <p>Receba dicas de sustentabilidade e ofertas exclusivas.</p>
             <form class="form-flex" onsubmit="enviarFormulario(event)">
-                <input type="email" placeholder="Digite seu melhor e-mail" required>
+                <input type="email" name="email" placeholder="Digite seu melhor e-mail" required>
                 <button type="submit" class="btn-main" style="border:none">Inscrever-se</button>
             </form>
         </div>
@@ -826,10 +827,29 @@
 
         // 6. MODAL
         function enviarFormulario(event) {
-            event.preventDefault();
-            const modal = document.getElementById('successModal');
-            modal.style.display = 'flex';
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch("/api/enviar_email", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('successModal').style.display = 'flex';
+            } else {
+                alert("Erro ao enviar email: " + (data.error || "Desconhecido"));
+            }
+        })
+        .catch(err => {
+            alert("Erro na requisição: " + err);
+        });
+
+        form.reset();
         }
+
         function fecharModal() {
             const modal = document.getElementById('successModal');
             modal.style.display = 'none';
