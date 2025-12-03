@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoBottle | O Futuro Sustentável</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. VARIÁVEIS E RESET
+           ========================================= */
+        :root {
+            --primary: #27ae60;       
+            --primary-dark: #219150;  
+            --secondary: #2c3e50;     
+            --background: #fdfdfd;    
+            --white: #ffffff;
+            --text-gray: #7f8c8d;
+            --error: #e74c3c;
+            --shadow-soft: 0 10px 40px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--secondary);
+            overflow-x: hidden;
+        }
+
+        /* BARRA DE PROGRESSO DE LEITURA (NOVO) */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            z-index: 2000;
+            background: transparent;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* =========================================
+           2. NAVBAR
+           ========================================= */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .logo i { color: var(--primary); font-size: 1.8rem; }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        nav a:hover::after { width: 100%; }
+        nav a:hover { color: var(--primary); }
+
+        .btn-header {
+            background: var(--secondary);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        .btn-header:hover { background: var(--primary); transform: translateY(-2px); }
+
+        /* =========================================
+           3. HERO SECTION
+           ========================================= */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5%;
+            padding-top: 80px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero-content > * {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero h1 { animation-delay: 0.2s; font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem; font-weight: 800; color: var(--secondary); }
+        .hero h1 span { color: var(--primary); }
+        .hero p { animation-delay: 0.4s; font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-gray); line-height: 1.6; max-width: 90%; }
+        .hero-cta { animation-delay: 0.6s; }
+
+        .btn-main {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-main:hover {
+            background: var(--primary-dark);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.5);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            position: relative;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards, floatImage 6s ease-in-out infinite 1.5s;
+        }
+
+        .hero-image img {
+            max-width: 90%;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            transform: rotate(-3deg);
+        }
+
+        /* =========================================
+           4. SEÇÃO DE BENEFÍCIOS
+           ========================================= */
+        .features {
+            padding: 6rem 5%;
+            background: var(--white);
+        }
+
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-title { font-size: 2.5rem; margin-bottom: 1rem; color: var(--secondary); }
+        .section-subtitle { color: var(--text-gray); font-size: 1.1rem; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: var(--transition);
+            border: 1px solid #eee;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: #e8f8f5;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        /* =========================================
+           5. CALCULADORA DE IMPACTO
+           ========================================= */
+        .calculator-section {
+            padding: 5rem 5%;
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+        }
+
+        .calc-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            max-width: 700px;
+            margin: 3rem auto 0;
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-group { margin: 2rem 0; }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .range-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 2rem;
+        }
+
+        .result-item h4 { font-size: 1rem; font-weight: 400; opacity: 0.8; margin-bottom: 0.5rem; }
+        .result-item div { font-size: 1.8rem; font-weight: bold; }
+
+        /* =========================================
+           6. QUIZ INTERATIVO (NOVO!)
+           ========================================= */
+        .quiz-section {
+            padding: 6rem 5%;
+            background: #fff;
+            text-align: center;
+        }
+
+        .quiz-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .quiz-question {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--secondary);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .quiz-btn {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            text-align: left;
+            position: relative;
+        }
+
+        .quiz-btn:hover {
+            border-color: var(--primary);
+            background: #f0fcf6;
+        }
+
+        /* Classes para feedback Visual */
+        .correct {
+            background-color: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+        }
+        
+        .wrong {
+            background-color: var(--error) !important;
+            color: white !important;
+            border-color: var(--error) !important;
+        }
+
+        /* =========================================
+           7. FAQ
+           ========================================= */
+        .faq-section {
+            padding: 6rem 5%;
+            background: #f8f9fa;
+        }
+
+        .faq-wrapper { max-width: 800px; margin: 0 auto; }
+
+        .accordion-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--secondary);
+            background: white;
+            transition: 0.3s;
+        }
+
+        .accordion-header:hover { background: #f1f1f1; }
+        .accordion-header i { transition: transform 0.3s; color: var(--primary); }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: white;
+            padding: 0 1.5rem;
+        }
+
+        .accordion-body p {
+            color: var(--text-gray);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .accordion-item.active .accordion-body {
+            max-height: 300px;
+            padding-bottom: 1.5rem;
+        }
+        .accordion-item.active .accordion-header i { transform: rotate(180deg); }
+
+        /* =========================================
+           8. RODAPÉ E NEWSLETTER
+           ========================================= */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 4rem 5% 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .newsletter-box {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-flex {
+            display: flex;
+            gap: 10px;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .form-flex input {
+            padding: 1rem;
+            border-radius: 50px;
+            border: none;
+            width: 100%;
+            max-width: 350px;
+            outline: none;
+        }
+
+        /* =========================================
+           9. MODAL DE SUCESSO
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            animation: popIn 0.4s ease;
+            position: relative;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        /* ANIMAÇÕES */
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatImage {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-15px) rotate(-3deg); }
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        .reveal.active-reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; }
+            .hero-content { margin-bottom: 3rem; }
+            .hero h1 { font-size: 2.8rem; }
+            nav ul { display: none; }
+            .hero-image img { transform: rotate(0); }
+            .results-grid { grid-template-columns: 1fr; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-box">
+            <span class="close-modal" onclick="fecharModal()">&times;</span>
+            <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
+            <h2 style="color: #2c3e50; margin-bottom: 10px;">Sucesso!</h2>
+            <p style="color: #666; font-size: 1.1rem;">
+                Parabéns! Você contribuiu para um futuro melhor. <br><br>
+                Enviamos um guia exclusivo para o seu e-mail cadastrado.
+            </p>
+            <br>
+            <button class="btn-main" onclick="fecharModal()" style="width: 100%;">Maravilha!</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-leaf"></i> EcoBottle
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#beneficios">Vantagens</a></li>
+                <li><a href="#impacto">Impacto</a></li>
+                <li><a href="#desafio" style="color:var(--primary)">Desafio</a></li> </ul>
+        </nav>
+        <a href="#contato" class="btn-header">Newsletter</a>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>Sua hidratação, <br><span style="color:var(--primary)" id="typing-text">Sustentável</span>.</h1>
+            <p>A primeira garrafa térmica do mundo feita com plástico retirado dos oceanos. Mantém gelado por 24h e quente por 12h.</p>
+            <div class="hero-cta">
+                <a href="#impacto" class="btn-main">Calcular Economia</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="Gemini_Generated_Image_p6t7gep6t7gep6t7.png" alt="Garrafa EcoBottle">
+        </div>
+    </section>
+
+    <section class="features" id="beneficios">
+        <div class="section-header reveal">
+            <h2 class="section-title">Tecnologia com Propósito</h2>
+            <p class="section-subtitle">Pequenas mudanças geram grandes impactos.</p>
+        </div>
+        <div class="grid-container">
+            <div class="card reveal">
+                <div class="icon-circle"><i class="fas fa-recycle"></i></div>
+                <h3>100% Reciclada</h3>
+                <p>Cada unidade retira o equivalente a 1000 garrafinhas plásticas do meio ambiente.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-circle"><i class="fas fa-temperature-low"></i></div>
+                <h3>Isolamento Duplo</h3>
+                <p>Tecnologia a vácuo que mantém a temperatura ideal até o último gole.</p>
+            </div>
+            <div class="card reveal">
+                <div class="icon-circle"><i class="fas fa-hand-holding-heart"></i></div>
+                <h3>Garantia Vitalícia</h3>
+                <p>Nós confiamos tanto no nosso produto que se quebrar, trocamos de graça.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="calculator-section reveal" id="impacto">
+        <h2 class="section-title" style="color:white">Calcule seu Impacto Real</h2>
+        <p style="opacity:0.8">Descubra quanto dinheiro e plástico você deixa de gastar em 1 ano.</p>
+
+        <div class="calc-wrapper">
+            <label style="font-size: 1.2rem;">Quantas garrafas plásticas você consome por semana?</label>
+            
+            <div class="input-group">
+                <span class="range-value" id="rangeValue">5</span>
+                <input type="range" id="calculatorRange" min="0" max="50" value="5">
+            </div>
+
+            <div class="results-grid">
+                <div class="result-item">
+                    <h4>Garrafas evitadas/ano</h4>
+                    <div id="resultBottles" style="color: var(--primary);">260</div>
+                </div>
+                <div class="result-item">
+                    <h4>Dinheiro economizado/ano</h4>
+                    <div id="resultMoney" style="color: #f1c40f;">R$ 1.300,00</div>
+                </div>
+            </div>
+            <p style="margin-top: 1.5rem; font-size: 0.8rem; opacity: 0.6;">*Baseado no custo médio de R$ 5,00 por garrafa de água.</p>
+        </div>
+    </section>
+
+    <section class="quiz-section reveal" id="desafio">
+        <h2 class="section-title">Desafio do Oceano Limpo</h2>
+        <p class="section-subtitle">Teste seus conhecimentos. Você sabe para onde vai o seu plástico?</p>
+        
+        <div class="quiz-container">
+            <div id="quiz-content">
+                <p class="quiz-question" id="questionText">Carregando pergunta...</p>
+                <div class="quiz-options" id="optionsContainer">
+                    </div>
+            </div>
+            <div id="quiz-result" style="display:none;">
+                <i class="fas fa-trophy" style="font-size: 3rem; color: #f1c40f; margin-bottom: 1rem;"></i>
+                <h3>Desafio Completado!</h3>
+                <p id="scoreText" style="margin: 1rem 0;">Você acertou X de Y.</p>
+                <button class="btn-main" onclick="restartQuiz()">Tentar Novamente</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section reveal" id="faq">
+        <div class="section-header">
+            <h2 class="section-title">Perguntas Frequentes</h2>
+        </div>
+        <div class="faq-wrapper">
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    O material é livre de BPA?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-body">
+                    <p>Sim! Todos os materiais são de grau alimentício, livres de BPA, BPS e ftalatos. É 100% seguro para você e sua família.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    Posso colocar café ou chá quente?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-body">
+                    <p>Com certeza. A EcoBottle mantém líquidos quentes acima de 60°C por até 12 horas sem aquecer a parte externa da garrafa.</p>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    Como funciona a devolução?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="accordion-body">
+                    <p>Você tem 30 dias para testar. Se não amar, devolvemos seu dinheiro e arcamos com o frete de devolução. Sem perguntas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contato">
+        <div class="newsletter-box">
+            <h2>Junte-se ao Movimento</h2>
+            <p>Receba dicas de sustentabilidade e ofertas exclusivas.</p>
+            <form class="form-flex" onsubmit="enviarFormulario(event)">
+                <input type="email" placeholder="Digite seu melhor e-mail" required>
+                <button type="submit" class="btn-main" style="border:none">Inscrever-se</button>
+            </form>
+        </div>
+        <p style="opacity: 0.6; font-size: 0.8rem;">&copy; 2023 EcoBottle Inc. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // 1. BARRA DE PROGRESSO (Scroll Indicator)
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+            
+            revealElements(); // Aproveitando para chamar o reveal
+        };
+
+        // 2. SCROLL REVEAL
+        function revealElements() {
+            var reveals = document.querySelectorAll('.reveal');
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveals[i].classList.add('active-reveal');
+                }
+            }
+        }
+        // Chamada inicial
+        revealElements();
+
+        // 3. LOGICA DO QUIZ (NOVO!)
+        const quizData = [
+            {
+                question: "Quanto tempo uma garrafa plástica leva para se decompor?",
+                options: ["50 anos", "100 anos", "450 anos", "10 anos"],
+                correct: 2 // Índice da resposta certa (450 anos)
+            },
+            {
+                question: "Qual porcentagem do plástico mundial é efetivamente reciclada?",
+                options: ["9%", "35%", "60%", "80%"],
+                correct: 0 // 9%
+            },
+            {
+                question: "Quantos animais marinhos morrem por ano devido ao plástico?",
+                options: ["1.000", "10.000", "50.000", "Mais de 100.000"],
+                correct: 3 // Mais de 100k
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuiz() {
+            const q = quizData[currentQuestion];
+            document.getElementById('questionText').innerText = q.question;
+            const optContainer = document.getElementById('optionsContainer');
+            optContainer.innerHTML = '';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = opt;
+                btn.classList.add('quiz-btn');
+                btn.onclick = () => checkAnswer(index, btn);
+                optContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            const correctIndex = quizData[currentQuestion].correct;
+            const buttons = document.querySelectorAll('.quiz-btn');
+            
+            // Desabilita cliques após escolher
+            buttons.forEach(b => b.disabled = true);
+
+            if(selectedIndex === correctIndex) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('wrong');
+                // Mostra qual era a certa
+                buttons[correctIndex].classList.add('correct');
+            }
+
+            // Próxima pergunta após 1.5s
+            setTimeout(() => {
+                currentQuestion++;
+                if(currentQuestion < quizData.length) {
+                    loadQuiz();
+                } else {
+                    showResult();
+                }
+            }, 1500);
+        }
+
+        function showResult() {
+            document.getElementById('quiz-content').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('scoreText').innerText = `Você acertou ${score} de ${quizData.length}!`;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quiz-content').style.display = 'block';
+            document.getElementById('quiz-result').style.display = 'none';
+            loadQuiz();
+        }
+
+        // Inicia o Quiz
+        loadQuiz();
+
+
+        // 4. FAQ LOGIC
+        const headers = document.querySelectorAll('.accordion-header');
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                if (item.classList.contains('active')) {
+                    item.classList.remove('active');
+                } else {
+                    document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // 5. TYPING EFFECT
+        const textSpan = document.getElementById('typing-text');
+        const words = ["Sustentável", "Inovadora", "Econômica", "Ecológica"];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const current = words[wordIndex];
+            if (isDeleting) {
+                textSpan.innerText = current.substring(0, charIndex--);
+            } else {
+                textSpan.innerText = current.substring(0, charIndex++);
+            }
+            let speed = isDeleting ? 50 : 150;
+            if (!isDeleting && charIndex === current.length + 1) {
+                speed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                speed = 500;
+            }
+            setTimeout(type, speed);
+        }
+        document.addEventListener('DOMContentLoaded', () => setTimeout(type, 1000));
+
+        // 6. MODAL
+        function enviarFormulario(event) {
+            event.preventDefault();
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'flex';
+        }
+        function fecharModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'none';
+            document.querySelector('form').reset();
+        }
+
+        // 7. CALCULADORA
+        const rangeInput = document.getElementById('calculatorRange');
+        const rangeValue = document.getElementById('rangeValue');
+        const resultBottles = document.getElementById('resultBottles');
+        const resultMoney = document.getElementById('resultMoney');
+
+        rangeInput.addEventListener('input', function() {
+            const val = this.value;
+            rangeValue.innerText = val;
+            const bottlesYear = val * 52;
+            const moneyYear = bottlesYear * 5.00; 
+            resultBottles.innerText = bottlesYear.toLocaleString('pt-BR');
+            resultMoney.innerText = moneyYear.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        });
+    </script>
+</body>
+</html>
