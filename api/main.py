@@ -7,7 +7,7 @@ app = Flask(__name__,
             static_folder='../static')
 
 # Configura API Resend
-resend.api_key = "re_c1tpEyD8_NKFusih9vKVQknRAQfmFcWCv"
+resend.api_key = "re_9v3J2pTS_H78B4UmtT1jGvTrAMXhDbTog"
 
 @app.route("/", methods=["GET"])
 def home():
